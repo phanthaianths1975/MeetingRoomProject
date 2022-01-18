@@ -1,0 +1,115 @@
+﻿@{
+    ViewData["Title"] = "MeetingRoom";
+    Layout = "~/Views/Shared/_Layout1.cshtml";
+}
+@model IEnumerable<Emergency.Areas.MeetingRoom.Models.Appointment>
+@using Emergency.Areas.MeetingRoom.Models
+@using Emergency.Areas.MeetingRoom.Controllers
+@using DevExtreme.AspNet.Mvc
+    @(Html.DevExtreme().Scheduler().ID("scheduler")
+    .Height(600)
+    .DataSource(Model)
+    .TimeZone("VietNam/HoChiMinh")
+    .TextExpr("Text")
+    .StartDateExpr("StartDate")
+    .EndDateExpr("EndDate")
+    .RecurrenceRuleExpr("RecurrenceRule")
+    .ShowAllDayPanel(false).OnAppointmentUpdated(@<text>
+    function(e) {
+            }
+</text>).OnAppointmentUpdating(@<text>
+            function(e) {
+            }
+</text>).OnAppointmentAdded(@<text>
+            function(e) {
+            }
+</text>).OnAppointmentDblClick(@<text>
+            function(e) {
+            }
+</text>).OnAppointmentClick(@<text>
+            function(e) {
+   $('#myModal').modal('show');
+            }
+</text>)
+     .Scrolling(config => { config.Mode(SchedulerScrollingMode.Virtual); })
+    .Views(views => {
+           views.Add()
+            .Type(SchedulerViewType.Day)
+            .StartDayHour(6)
+            .EndDayHour(24)
+            .Groups(new[] { "PriorityId" })
+            .DateCellTemplate(@<text>
+                @(await Html.PartialAsync("_DateCellTemplate"))
+            </text>);
+    })
+    .CurrentView(SchedulerViewType.Day)
+    .CurrentDate(new DateTime(2022, 1, 18))
+    .StartDayHour(6)
+    .EndDayHour(24)
+    .Scrolling(config => { config.Mode(SchedulerScrollingMode.Virtual); })
+    .Editing(e => e.AllowAdding(new SchedulerController().AllowAdd()).AllowDeleting(MeetingRoom.AllowDelete()).AllowDragging(true).AllowUpdating(MeetingRoom.AllowUpdate()))
+   .Resources(res => {
+       res.Add()
+           .FieldExpr("PriorityId")
+           .AllowMultiple(false)
+           .Label("Meeting Room")
+           .DataSource(MeetingRoom.RoomList());
+       res.Add()
+           .FieldExpr("TypeId")
+           .AllowMultiple(true)
+           .Label("Tiện ích")
+           .DataSource(new[] {
+                new { text = "Máy Tính", id = 1, color = "#b6d623" },
+                new { text = "Đèn Chiếu", id = 2, color = "#679ec5" },
+                new { text = "Internet", id = 3, color = "#679ec5" },
+                new { text = "Nước", id = 4, color = "#679ec5" },
+                new { text = "Hoa", id = 5, color = "#679ec5" }
+      });
+   }))
+        <div class="container">
+            @*<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal">Open Modal</button>*@
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" role="dialog">
+                <div class="modal-dialog">
+                    <!-- Modal content-->
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="container">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>Chức năng</th>
+                                            <th>Nút lệnh</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Thêm Phòng</td>
+                                            <td>
+                                                <button type="button" id="btn" style="width:100%" class="btn btn-primary" onclick="">
+                                                    Thêm Phòng
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Bớt Phòng</td>
+                                            <td><button type="button" style="width:100%" class="btn btn-primary">Bớt Phòng</button></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Chuyển Phòng</td>
+                                            <td><button type="button" style="width:100%" class="btn btn-primary">Chuyển Phòng</button></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
